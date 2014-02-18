@@ -15,7 +15,14 @@ if (argv.sniff) {
 		config: config
 	})
 } else {
-	require('../index')(config, function (galaxya) {
-		console.log('galaxya started')
+	if (typeof config === 'function') {
+		callback = config
+		config = undefined
+	}
+
+	var galaxya = require('../index')(config)
+
+	galaxya.start(function() {
+		console.log('galaxya started!')
 	})
 }

@@ -1,28 +1,10 @@
-var darkmagic = require('darkmagic')
-var ip = require('ip')
+var grapevine = require('grapevine')
+var Galaxya = require('./lib/Galaxya.js')
 
-module.exports = function (config, callback) {
-
-	config = config || {}
-
-	config.address = config.address || ip.address()
-	config.port = config.port || 25120
-
-	darkmagic.inject(main, {
-		config: config
-	})
-
-	function main(gossiper, Galaxya, debug) {
-
-		debug = debug('galaxya_index')
-
-		var galaxya = new Galaxya(gossiper)
-
-		galaxya.start(function() {
-			callback(null, galaxya)
-		})
-	}
+module.exports = function (config) {
+	var gossiper = new grapevine.Gossiper(config.port, config.seeds, config.address)
+	return new Galaxya(gossiper)
 }
 
-module.exports.Galaxya = require('./lib/Galaxya.js')
+module.exports.Galaxya = Galaxya
 
