@@ -1,0 +1,33 @@
+{
+  "name": "galaxya",
+  "version": "0.0.1",
+  "description": "service discovery using gossip",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kessler/galaxya"
+  },
+  "keywords": [
+    "service",
+    "discovery",
+    "service",
+    "registry"
+  ],
+  "author": "Yaniv Kessler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kessler/galaxya/issues"
+  },
+  "dependencies": {
+    "darkmagic": "0.0.25",
+    "grapevine": "0.1.42",
+    "debug": "~0.7.4",
+    "ip": "~0.3.0"
+  },
+  "devDependencies": {
+    "eyes": "~0.1.8"
+  }
+}
