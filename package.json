@@ -1,7 +1,7 @@
 {
   "name": "galaxya",
   "version": "0.0.2",
-  "description": "service discovery using gossip",
+  "description": "embeddable peer 2 peer service discovery and configuration service",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
