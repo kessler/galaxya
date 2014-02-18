@@ -173,7 +173,7 @@ describe('Galaxya', function () {
 })
 
 describe('integration test', function () {
-	it('', function (done) {
+	it('gossips', function (done) {
 		this.timeout(10000)
 
 		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
@@ -200,6 +200,36 @@ describe('integration test', function () {
 					gossiper1.stop()
 					gossiper2.stop()
 					done()
+				})
+			})
+		})
+	})
+
+	it('gossips', function (done) {
+		this.timeout(20000)
+
+		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
+		var gossiper2 = new grapevine.Gossiper(25121)
+		var g1 = new Galaxya(gossiper1)
+		var g2 = new Galaxya(gossiper2)
+
+		g1.start(function () {
+			g2.start(function () {
+
+				g1.registerService({
+					name: 'myservice',
+					port: '2512'
+				})
+
+				g2.waitForService('myservice', function (service) {
+
+					g2.onServiceActivity(service, function (status) {
+						assert.ok(!status.alive)
+						gossiper2.stop()
+						done()
+					})
+
+					gossiper1.stop()
 				})
 			})
 		})
