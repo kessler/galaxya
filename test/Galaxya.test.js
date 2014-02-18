@@ -184,12 +184,10 @@ describe('integration test', function () {
 		g1.start(function () {
 			g2.start(function () {
 
-
 				g1.registerService({
 					name: 'myservice',
 					port: '2512'
 				})
-
 
 				g2.waitForService('myservice', function (service) {
 					assert.strictEqual(service.version, '0.0.0')
