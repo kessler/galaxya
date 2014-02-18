@@ -1,6 +1,6 @@
 {
   "name": "galaxya",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "service discovery using gossip",
   "main": "index.js",
   "scripts": {
