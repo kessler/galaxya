@@ -1,5 +1,6 @@
 # Galaxya
 
-A service discovery and configuration peer 2 peer network
+Peer 2 peer service discovery and configuration network
 
-* 1 to many mapping between gossiper to services
+TODO
+* document the 1 to many mapping between gossiper to services topology
