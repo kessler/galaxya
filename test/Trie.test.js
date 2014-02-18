@@ -34,21 +34,28 @@ describe('Trie', function () {
 	it('_collect()', function () {
 		var results = []
 		var path = ['a', 'b']
-		trie._collect(path, trie._data['a']['b'], results)
+		trie._searchByPrefixCollect(path, trie._data['a']['b'], results)
 
 		assert.deepEqual(results[0], [['a', 'b', 'c'], 'data'])
 		assert.deepEqual(results[1], [['a', 'b', 'd'], 'data1'])
 	})
 
 	it('can be searched', function () {
-		var results = trie.search(['a', 'b'])
+		var results = trie.searchByPrefix(['a', 'b'])
 
 		assert.deepEqual(results[0], [['a', 'b', 'c'], 'data'])
 		assert.deepEqual(results[1], [['a', 'b', 'd'], 'data1'])
 	})
 
+	it('can be searched and results will not include keys, just data', function () {
+		var results = trie.searchByPrefix(['a', 'b'], true)
+
+		assert.deepEqual(results[0], 'data')
+		assert.deepEqual(results[1], 'data1')
+	})
+
 	it('wont return results if prefix does not exist', function () {
-		var results = trie.search(['a', 'l'])
+		var results = trie.searchByPrefix(['a', 'l'])
 
 		assert.strictEqual(results.length, 0)
 	})

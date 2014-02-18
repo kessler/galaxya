@@ -9,6 +9,7 @@ function newGossiper(port) {
 
 	emitter.port = port
 	emitter.address = '127.0.0.1'
+	emitter.peer_name = '127.0.0.1:' + port
 	emitter.state = {}
 	emitter.setLocalState = function (k, v, ttl) {
 		this.state[k] = [v, ttl]
@@ -26,7 +27,7 @@ describe('Galaxya', function () {
 	it('store services in a local index', function () {
 		var mockGossiper = newGossiper(2324)
 		var g1 = galaxy(mockGossiper)
-		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }}
+		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var key = g1.registerService(s1)
 
 		assert.deepEqual(key.path, ['service', 'myservice', '1.1.1', '127.0.0.1', '123'])
@@ -41,9 +42,9 @@ describe('Galaxya', function () {
 		var mockGossiper = newGossiper(2324)
 		var g1 = galaxy(mockGossiper)
 
-		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }}
-		var s2 = { name:'myservice', version: '1.1.2', port: 124, data: { moo: 'pie' }}
-		var s3 = { name:'myservice', version: '1.1.3', port: 124, data: { moo: 'pie' }}
+		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+		var s2 = { name:'myservice', version: '1.1.2', port: 124, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+		var s3 = { name:'myservice', version: '1.1.3', port: 124, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
 		var e1Called = false
 		//var e2Called = false
@@ -75,9 +76,9 @@ describe('Galaxya', function () {
 		var mockGossiper = newGossiper(2324)
 		var g1 = galaxy(mockGossiper)
 
-		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }}
-		var s2 = { name:'myservice', version: '1.1.2', port: 123, data: { moo: 'pie' }}
-		var s3 = { name:'myservice', version: '1.1.3', port: 123, data: { moo: 'pie' }}
+		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+		var s2 = { name:'myservice', version: '1.1.2', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+		var s3 = { name:'myservice', version: '1.1.3', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
 		g1.waitForService('myservice', '1.1.2', function(service) {
 			assert.deepEqual(service, s2)
@@ -92,7 +93,7 @@ describe('Galaxya', function () {
 		var mockGossiper = newGossiper(2324)
 		var g1 = galaxy(mockGossiper)
 
-		var s1 = { name:'moo', address: '127.0.0.1', version: '1.1.1', port: '1234', data: { moo: 'pie' }}
+		var s1 = { name:'moo', address: '127.0.0.1', version: '1.1.1', port: '1234', data: { moo: 'pie' }, gossiper: '127.0.0.1:25123'}
 
 		assert.strictEqual(g1.lookupService('moo').length, 0)
 
@@ -113,6 +114,34 @@ describe('Galaxya', function () {
 
 		mockGossiper.emit('expire', ['service/moo/1.1.1/127.0.0.1/1234'])
 
+	})
+
+	it('emits an event when a peer fails', function (done) {
+		var mockGossiper = newGossiper(2324)
+		var g1 = galaxy(mockGossiper)
+
+		var peer = { name: '127.0.0.5:2313' }
+
+		g1.on('127.0.0.5:2313', function(peerStatus) {
+			assert.ok(!peerStatus.alive)
+			done()
+		})
+
+		mockGossiper.emit('peer_failed', peer)
+	})
+
+	it('emits an event when a peer is alive', function (done) {
+		var mockGossiper = newGossiper(2324)
+		var g1 = galaxy(mockGossiper)
+
+		var peer = { name: '127.0.0.5:2313' }
+
+		g1.on('127.0.0.5:2313', function(peerStatus) {
+			assert.ok(peerStatus.alive)
+			done()
+		})
+
+		mockGossiper.emit('peer_alive', peer)
 	})
 
 	it('filter util - when its there', function () {
@@ -141,7 +170,7 @@ describe('Galaxya', function () {
 	})
 })
 
-describe('integration test', function () {
+describe.skip('integration test', function () {
 	it('', function (done) {
 		this.timeout(10000)
 		var gossiper2, gossiper1
