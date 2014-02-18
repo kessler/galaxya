@@ -16,7 +16,11 @@ module.exports = function (config, callback) {
 
 		debug = debug('galaxya_index')
 
-		var galaxya = new Galaxya(config, gossiper)
+		var galaxya = new Galaxya(gossiper)
+
+		gossiper.start(function() {
+			callback(null, galaxya)
+		})
 	}
 }
 

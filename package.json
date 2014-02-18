@@ -11,10 +11,10 @@
     "url": "https://github.com/kessler/galaxya"
   },
   "keywords": [
-    "service",
-    "discovery",
-    "service",
-    "registry"
+    "service discovery",
+    "service registry",
+    "gossip",
+    "scuttlebutt"
   ],
   "author": "Yaniv Kessler",
   "license": "MIT",
