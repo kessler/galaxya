@@ -80,3 +80,4 @@ _note: this api might change so the events will be registered on the service ins
 
 TODO
 * document the 1 to many mapping between gossiper to services topology
+* add auto network space assignment
