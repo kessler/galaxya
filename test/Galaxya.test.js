@@ -14,6 +14,8 @@ function newGossiper(port) {
 	emitter.setLocalState = function (k, v, ttl) {
 		this.state[k] = [v, ttl]
 	}
+	emitter.start = function () {
+	}
 
 	return emitter
 }
@@ -170,18 +172,18 @@ describe('Galaxya', function () {
 	})
 })
 
-describe.skip('integration test', function () {
+describe('integration test', function () {
 	it('', function (done) {
 		this.timeout(10000)
-		var gossiper2, gossiper1
 
-		gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		gossiper1.start(function () {
-			gossiper2 = new grapevine.Gossiper(25121)
-			gossiper2.start(function () {
+		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
+		var gossiper2 = new grapevine.Gossiper(25121)
+		var g1 = new Galaxya(gossiper1)
+		var g2 = new Galaxya(gossiper2)
 
-				var g1 = new Galaxya(gossiper1)
-				var g2 = new Galaxya(gossiper2)
+		g1.start(function () {
+			g2.start(function () {
+
 
 				g1.registerService({
 					name: 'myservice',

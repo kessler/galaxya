@@ -6,6 +6,9 @@
   "scripts": {
     "test": "mocha"
   },
+  "bin": {
+    "galaxya": "bin/galaxya.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/kessler/galaxya"
@@ -23,10 +26,13 @@
   },
   "dependencies": {
     "darkmagic": "0.0.25",
-    "grapevine": "0.1.42",
+    "grapevine": "0.1.43",
     "debug": "~0.7.4",
     "ip": "~0.3.0",
-    "semver": "~2.2.1"
+    "semver": "~2.2.1",
+    "rc": "~0.3.3",
+    "optimist": "~0.6.1",
+    "find-port": "0.0.3"
   },
   "devDependencies": {
     "eyes": "~0.1.8"

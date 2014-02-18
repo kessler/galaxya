@@ -18,7 +18,7 @@ module.exports = function (config, callback) {
 
 		var galaxya = new Galaxya(gossiper)
 
-		gossiper.start(function() {
+		galaxya.start(function() {
 			callback(null, galaxya)
 		})
 	}
