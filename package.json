@@ -25,7 +25,8 @@
     "darkmagic": "0.0.25",
     "grapevine": "0.1.42",
     "debug": "~0.7.4",
-    "ip": "~0.3.0"
+    "ip": "~0.3.0",
+    "semver": "~2.2.1"
   },
   "devDependencies": {
     "eyes": "~0.1.8"

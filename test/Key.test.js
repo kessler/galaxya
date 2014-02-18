@@ -2,34 +2,44 @@ var Key = require('../lib/Key.js')
 var assert = require('assert')
 
 describe('Key', function () {
-	it('is created from a string', function () {
-		var key = new Key('a/b/c')
+	it('is created from an array', function () {
+		var key = new Key(['a', 'b', 'c'])
 
-		assert.strictEqual(key.id, 'a/b/c')
 		assert.deepEqual(key.path, ['a', 'b', 'c'])
-		assert.ok(key.isValid())
 	})
 
-	it('is only valid if path is specified properly', function () {
-		var key = new Key('')
-		assert.ok(!key.isValid())
+	it('will throw an exception path is missing', function () {
+		assert.throws(function () {
+			new Key()
+		})
 	})
 
-	it('toString() method is vital - it is used in lookups in hashes - extra is not included', function () {
-		var key = new Key('a/b/c')
+	it('will throw an exception path is empty', function () {
+		assert.throws(function () {
+			new Key([])
+		})
+	})
+
+	it('toString() method is vital - it is used in lookups in hashes and once called caches the result', function () {
+		var key = new Key(['a', 'b', 'c'])
+
+		assert.strictEqual(key.id, undefined)
 		assert.strictEqual(key.toString(), 'a/b/c')
+		assert.strictEqual(key.id, 'a/b/c')
 	})
 
-	describe('can be created from arguments', function () {
+	describe('can be created from strings', function () {
 		it('by specifying path separator and one or more arguments', function () {
-			var key = Key.fromArgs('/', 1, 2, 3)
-			assert.strictEqual(key.toString(), '1/2/3')
+			var key = Key.fromString('/', '1/2/3')
+			assert.deepEqual(key.path, ['1', '2', '3'])
 		})
 
-		it('will throw an exception if not enough arguments are used', function () {
-			assert.throws(function () {
-				Key.fromArgs()
-			})
+		it('will return nothing if string is missing', function () {
+			assert.strictEqual(Key.fromString(), undefined)
+		})
+
+		it('will return nothing if string is empty', function () {
+			assert.strictEqual(Key.fromString(''), undefined)
 		})
 	})
 })
