@@ -44,43 +44,35 @@ galaxya.start(function () {
 })
 ```
 
-#### client1.js
-```javascript
-var galaxya = require('galaxya')({port: 25122, seeds: [ '127.0.0.1:25121' ]})
-
-galaxya.start(function () {
-	var results = galaxya.lookupService('foo', '0.0.5')
-
-	//results might be
-	// [
-	// 		{ port: 12345, name: 'foo', version: '1.0.0', data: { my: 'service', data: 1 }},
-	//		{ port: 12345, name: 'foo', version: '0.0.6', data: { my: 'service', data: 1 }}
-	// ]
-})
-
-```
-
-// client2.js
+// client.js
 ```javascript
 var galaxya = require('galaxya')({port: 25123, seeds: [ '127.0.0.1:25122' ]})
 
 galaxya.start(function () {
-	// will get called when this node gets notified about a foo service with version >= 0.0.5
+
+	var services = galaxya.lookupService('foo', '0.0.5')
+
+	//services might be
+	// [
+	// 		{ port: 12345, name: 'foo', version: '1.0.0', data: { my: 'service', data: 1 }},
+	//		{ port: 12345, name: 'foo', version: '0.0.6', data: { my: 'service', data: 1 }}
+	// ]
+
+	// discover new foo services
 	var discovery = galaxya.discoverService('foo')
 
 	discovery.on('available', function (service) {
-
+		// notify on all foo services
 	})
 
 	discovery.on('available', '0.0.3' function (service) {
+		// notify on versions equal or higher than 0.0.3
 		service.on('failed', function () {	})
 		service.on('alive', function () { })
-		}
 	})
 })
 
 ```
-_note: this api might change so the events will be registered on the service instance_
 
 TODO
 * document the 1 to many mapping between gossiper to services topology

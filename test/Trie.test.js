@@ -14,7 +14,6 @@ describe('Trie', function () {
 	})
 
 	it('put()', function () {
-
 		assert.strictEqual(typeof trie._data['a'], 'object')
 		assert.strictEqual(typeof trie._data['a']['b'], 'object')
 		assert.strictEqual(typeof trie._data['a']['b']['c'], 'object')
