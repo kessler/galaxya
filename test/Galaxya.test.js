@@ -48,17 +48,6 @@ describe('Galaxya', function () {
 		var s2 = { name:'myservice', version: '1.1.2', port: 124, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var s3 = { name:'myservice', version: '1.1.3', port: 124, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
-		var e1Called = false
-		//var e2Called = false
-
-		g1.once('service/myservice', function () {
-			e1Called = true
-		})
-
-		// g1.once('service/myservice/1.1.1', function () {
-		// 	e2Called = true
-		// })
-
 		g1.registerService(s1)
 		g1.registerService(s2)
 		g1.registerService(s3)
@@ -69,26 +58,37 @@ describe('Galaxya', function () {
 
 		assert.deepEqual(results[1], s2)
 		assert.deepEqual(results[0], s3)
-
-		assert.ok(e1Called)
-		//assert.ok(e2Called)
 	})
 
-	it('can be waited for services to become available', function (done) {
+	it('emits an event with the service name when a new service is registered', function (done) {
+
 		var mockGossiper = newGossiper(2324)
 		var g1 = galaxy(mockGossiper)
 
 		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
-		var s2 = { name:'myservice', version: '1.1.2', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
-		var s3 = { name:'myservice', version: '1.1.3', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
-		g1.waitForService('myservice', '1.1.2', function(service) {
-			assert.deepEqual(service, s2)
+		g1.on('service/myservice', function (service) {
+			assert.deepEqual(service, s1)
 			done()
 		})
 
 		g1.registerService(s1)
-		g1.registerService(s2)
+	})
+
+	it('emits a service event only once for service with the same version from the same machine and port', function (done) {
+
+		var mockGossiper = newGossiper(2324)
+		var g1 = galaxy(mockGossiper)
+
+		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+		var calls = 0
+		g1.on('service/myservice', function(service) {
+			assert.deepEqual(service, s1)
+			assert.strictEqual(++calls, 1)
+			done()
+		})
+
+		g1.registerService(s1)
 	})
 
 	it('registers a service from gossip', function (done) {
@@ -124,10 +124,7 @@ describe('Galaxya', function () {
 
 		var peer = { name: '127.0.0.5:2313' }
 
-		g1.on('127.0.0.5:2313', function(peerStatus) {
-			assert.ok(!peerStatus.alive)
-			done()
-		})
+		g1.on('127.0.0.5:2313 failed', done)
 
 		mockGossiper.emit('peer_failed', peer)
 	})
@@ -138,10 +135,7 @@ describe('Galaxya', function () {
 
 		var peer = { name: '127.0.0.5:2313' }
 
-		g1.on('127.0.0.5:2313', function(peerStatus) {
-			assert.ok(peerStatus.alive)
-			done()
-		})
+		g1.on('127.0.0.5:2313 alive', done)
 
 		mockGossiper.emit('peer_alive', peer)
 	})
@@ -153,7 +147,7 @@ describe('Galaxya', function () {
 			{ version : '1.1.1'}
 		]
 
-		services = Galaxya.filterServices('1.1.2', services)
+		services = Galaxya.filterGtOrEq('1.1.2', services)
 		assert.strictEqual(services.length, 2)
 
 		assert.strictEqual(services[0].version, '1.1.3')
@@ -167,7 +161,7 @@ describe('Galaxya', function () {
 			{ version : '1.0.1'}
 		]
 
-		services = Galaxya.filterServices('1.1.2', services)
+		services = Galaxya.filterGtOrEq('1.1.2', services)
 		assert.strictEqual(services.length, 0)
 	})
 })
@@ -184,12 +178,9 @@ describe('integration test', function () {
 		g1.start(function () {
 			g2.start(function () {
 
-				g1.registerService({
-					name: 'myservice',
-					port: '2512'
-				})
+				var discovery = g2.discoverService('myservice')
 
-				g2.waitForService('myservice', function (service) {
+				discovery.on('available', function (service) {
 					assert.strictEqual(service.version, '0.0.0')
 					assert.strictEqual(service.name, 'myservice')
 					assert.strictEqual(service.port, '2512')
@@ -199,11 +190,16 @@ describe('integration test', function () {
 					gossiper2.stop()
 					done()
 				})
+
+				g1.registerService({
+					name: 'myservice',
+					port: '2512'
+				})
 			})
 		})
 	})
 
-	it('gossips', function (done) {
+	it('reports failed peers', function (done) {
 		this.timeout(20000)
 
 		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
@@ -214,21 +210,23 @@ describe('integration test', function () {
 		g1.start(function () {
 			g2.start(function () {
 
-				g1.registerService({
-					name: 'myservice',
-					port: '2512'
-				})
+				var discovery = g2.discoverService('myservice')
 
-				g2.waitForService('myservice', function (service) {
+				discovery.on('available', function (service) {
 
-					g2.onServiceActivity(service, function (status) {
-						assert.ok(!status.alive)
+					service.on('failed', function () {
 						gossiper2.stop()
 						done()
 					})
 
 					gossiper1.stop()
 				})
+
+				g1.registerService({
+					name: 'myservice',
+					port: '2512'
+				})
+
 			})
 		})
 	})

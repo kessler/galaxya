@@ -66,12 +66,16 @@ var galaxya = require('galaxya')({port: 25123, seeds: [ '127.0.0.1:25122' ]})
 
 galaxya.start(function () {
 	// will get called when this node gets notified about a foo service with version >= 0.0.5
-	galaxya.waitForService('foo', '0.0.5', function (service) {
-		galaxya.onServiceActivity(service, function(status) {
-			if(!status.alive) {
-				console.log('%s failed', service.name)
-			}
-		})
+	var discovery = galaxya.discoverService('foo')
+
+	discovery.on('available', function (service) {
+
+	})
+
+	discovery.on('available', '0.0.3' function (service) {
+		service.on('failed', function () {	})
+		service.on('alive', function () { })
+		}
 	})
 })
 
