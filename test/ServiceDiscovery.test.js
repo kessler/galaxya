@@ -13,6 +13,9 @@ describe('ServiceDiscovery', function () {
 	beforeEach(function() {
 		galaxya = new EventEmitter()
 		galaxya._pathSeparator = '/'
+		galaxya.lookupService = function () {
+			return this._results || []
+		}
 
 		serviceDiscovery = new ServiceDiscovery(galaxya, 'foo')
 	})
@@ -27,6 +30,18 @@ describe('ServiceDiscovery', function () {
 		})
 
 		galaxya.emit('foo', s1)
+	})
+
+	it('when registering the available event, fire (almost) immediately for existing services', function (done) {
+
+		var s1 = { version: '1.1.1' }
+
+		galaxya._results = [ s1 ]
+
+		serviceDiscovery.on('available', function(service) {
+			assert.strictEqual(service, s1)
+			done()
+		})
 	})
 
 	it('allows registration to services with minimum version', function (done) {

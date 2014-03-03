@@ -311,4 +311,35 @@ describe('integration test', function () {
 			})
 		})
 	})
+
+	it('does not advertise services on failed galaxies', function (done) {
+		this.timeout(25000)
+
+		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
+		var gossiper2 = new grapevine.Gossiper(25121)
+		var g1 = new Galaxya(gossiper1)
+		var g2 = new Galaxya(gossiper2)
+
+		g1.start(function () {
+			g2.start(function () {
+
+				var discovery = g2.discoverService('myservice')
+
+				discovery.on('available', function (service) {
+
+					service.on('fail', function () {
+						gossiper2.stop()
+						done()
+					})
+
+					gossiper1.stop()
+				})
+
+				g1.registerService({
+					name: 'myservice',
+					port: '2512'
+				})
+			})
+		})
+	})
 })
