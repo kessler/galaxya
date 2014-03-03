@@ -90,7 +90,6 @@ galaxya.start(function () {
 	// serviceClient.js
 	var discovery = galaxya.discoverService('foo/bar')
 
-
 	discovery.on('available', function(service) {
 		// fires twice, once for foo/bar and once for foo/bar/moo
 	})
