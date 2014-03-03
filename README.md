@@ -44,7 +44,7 @@ galaxya.start(function () {
 })
 ```
 
-// client.js
+#### client.js
 ```javascript
 var galaxya = require('galaxya')({port: 25123, seeds: [ '127.0.0.1:25122' ]})
 
@@ -67,13 +67,38 @@ galaxya.start(function () {
 
 	discovery.on('available', '0.0.3' function (service) {
 		// notify on versions equal or higher than 0.0.3
-		service.on('failed', function () {	})
+		service.on('fail', function () {	})
 		service.on('alive', function () { })
 	})
 })
 
 ```
 
+#### namespacing
+```javascript
+	// service1.js
+	galaxya.registerService({
+		name: 'foo/bar/moo',
+		port: 1234
+	})
+
+	galaxya.registerService({
+		name: 'foo/bar',
+		port: 1234
+	})
+
+	// serviceClient.js
+	var discovery = galaxya.discoverService('foo/bar')
+
+
+	discovery.on('available', function(service) {
+		// fires twice, once for foo/bar and once for foo/bar/moo
+	})
+
+```
+
+
 TODO
 * document the 1 to many mapping between gossiper to services topology
-* add auto network space assignment
+* ad
+d auto network space assignment

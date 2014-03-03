@@ -18,9 +18,9 @@ describe('Service', function () {
 
 	it('fires a failed event when peer fails', function (done) {
 
-		service.on('failed', done)
+		service.on('fail', done)
 
-		galaxya.emit(peer + ' failed')
+		galaxya.emit(peer + ' fail')
 	})
 
 	it('fires an alive event when a peer is alive', function (done) {
