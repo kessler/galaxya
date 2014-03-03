@@ -14,12 +14,17 @@ describe('Trie', function () {
 	})
 
 	it('put()', function () {
-		assert.strictEqual(typeof trie._data['a'], 'object')
-		assert.strictEqual(typeof trie._data['a']['b'], 'object')
-		assert.strictEqual(typeof trie._data['a']['b']['c'], 'object')
-		assert.strictEqual(typeof trie._data['a']['b']['d'], 'object')
-		assert.strictEqual(trie._data['a']['b']['c'].$, 'data')
-		assert.strictEqual(trie._data['a']['b']['d'].$, 'data1')
+		assert.strictEqual(typeof trie._data.a, 'object')
+		assert.strictEqual(typeof trie._data.a.b, 'object')
+		assert.strictEqual(typeof trie._data.a.b.c, 'object')
+		assert.strictEqual(typeof trie._data.a.b.d, 'object')
+		assert.strictEqual(trie._data.a.b.c.$, 'data')
+		assert.strictEqual(trie._data.a.b.d.$, 'data1')
+	})
+
+	it('remove()', function () {
+		trie.remove(['a', 'b', 'c'])
+		assert.strictEqual(trie._data.a.b.c, undefined)
 	})
 
 	it('get()', function () {

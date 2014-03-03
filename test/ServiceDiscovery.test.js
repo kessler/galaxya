@@ -26,7 +26,7 @@ describe('ServiceDiscovery', function () {
 			done()
 		})
 
-		galaxya.emit('service/foo', s1)
+		galaxya.emit('foo', s1)
 	})
 
 	it('allows registration to services with minimum version', function (done) {
@@ -38,7 +38,7 @@ describe('ServiceDiscovery', function () {
 			done()
 		})
 
-		galaxya.emit('service/foo', s1)
+		galaxya.emit('foo', s1)
 	})
 
 	it('will not trigger version specific registration when version is lower', function (done) {
@@ -49,7 +49,7 @@ describe('ServiceDiscovery', function () {
 			done('should not happen')
 		})
 
-		galaxya.emit('service/foo', s1)
+		galaxya.emit('foo', s1)
 
 		// WARNING: this test will not work if emitting will become really asynchronous for some reason
 		done()
