@@ -2,7 +2,6 @@ var Galaxya = require('../lib/Galaxya.js')
 var EventEmitter = require('events').EventEmitter
 var assert = require('assert')
 var inspect = require('eyes').inspector()
-var grapevine = require('grapevine')
 
 function newGossiper(port) {
 	var emitter = new EventEmitter()
@@ -20,7 +19,7 @@ function newGossiper(port) {
 	return emitter
 }
 
-function galaxy(gossiper) {
+function galaxya(gossiper) {
 	return new Galaxya(gossiper)
 }
 
@@ -28,7 +27,7 @@ describe('Galaxya', function () {
 
 	it('store services in a local index', function () {
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var key = g1.registerService(s1)
 
@@ -43,7 +42,7 @@ describe('Galaxya', function () {
 
 	it('store services with name spaces', function () {
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 		var s1 = { name:'myservice/namespace1/namespace2', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var key = g1.registerService(s1)
 
@@ -59,7 +58,7 @@ describe('Galaxya', function () {
 	it('can be queries for services', function () {
 
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 
 		var s1 = { name:'s1/sub1/sub2', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var s2 = { name:'s1/sub1/sub2', version: '1.1.2', port: 124, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
@@ -87,7 +86,7 @@ describe('Galaxya', function () {
 	it('emits events based on service namespace when a service is registered', function (done) {
 
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 
 		var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
@@ -117,7 +116,7 @@ describe('Galaxya', function () {
 	it('emits a service event only once for service with the same version from the same machine and port', function (done) {
 
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 
 		var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
@@ -142,9 +141,57 @@ describe('Galaxya', function () {
 		})
 	})
 
+	describe('services can be discovered', function () {
+		it('after they were registered', function (done) {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
+
+			var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+
+			g1.registerService(s1)
+
+			var discovery = g1.discoverService('s1')
+
+			discovery.on('available', function (service) {
+				assert.deepEqual(service, s1)
+				done()
+			})
+		})
+
+		it('by listening for future events', function (done) {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
+
+			var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, address: '127.0.0.1', data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+
+			var discovery = g1.discoverService('s1')
+
+			discovery.on('available', function (service) {
+				assert.deepEqual(service, s1)
+				done()
+			})
+
+			mockGossiper.emit('update', '127.0.0.1:2324', 's1/sub1/1.1.1/127.0.0.1/123', s1)
+		})
+
+		it('by using  callback', function (done) {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
+
+			var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, address: '127.0.0.1', data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+
+			var discovery = g1.discoverService('s1', function (service) {
+				assert.deepEqual(service, s1)
+				done()
+			})
+
+			mockGossiper.emit('update', '127.0.0.1:2324', 's1/sub1/1.1.1/127.0.0.1/123', s1)
+		})
+	})
+
 	it('registers a service from gossip', function (done) {
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 
 		var s1 = { name:'moo/pie', address: '127.0.0.1', version: '1.1.1', port: '1234', data: { moo: 'pie' }, gossiper: '127.0.0.1:25123'}
 
@@ -160,7 +207,7 @@ describe('Galaxya', function () {
 
 	it('expires a service from gossip', function (done) {
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 
 		var s1 = { name:'moo', address: '127.0.0.1', version: '1.1.1', port: '1234', data: { moo: 'pie' }}
 
@@ -177,7 +224,7 @@ describe('Galaxya', function () {
 
 	it('emits an event when a peer fails', function (done) {
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 
 		var peer = '127.0.0.5:2313'
 
@@ -188,7 +235,7 @@ describe('Galaxya', function () {
 
 	it('emits an event when a peer is alive', function (done) {
 		var mockGossiper = newGossiper(2324)
-		var g1 = galaxy(mockGossiper)
+		var g1 = galaxya(mockGossiper)
 
 		var peer = '127.0.0.5:2313'
 
@@ -220,126 +267,5 @@ describe('Galaxya', function () {
 
 		services = Galaxya.filterGtOrEq('1.1.2', services)
 		assert.strictEqual(services.length, 0)
-	})
-})
-
-describe('integration test', function () {
-	it('gossips', function (done) {
-		this.timeout(10000)
-
-		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		var gossiper2 = new grapevine.Gossiper(25121)
-		var g1 = new Galaxya(gossiper1)
-		var g2 = new Galaxya(gossiper2)
-
-		g1.start(function () {
-			g2.start(function () {
-
-				var discovery = g2.discoverService('myservice')
-
-				discovery.on('available', function (service) {
-					assert.strictEqual(service.version, '0.0.0')
-					assert.strictEqual(service.name, 'myservice')
-					assert.strictEqual(service.port, '2512')
-					assert.strictEqual(service.address, '127.0.0.1')
-
-					gossiper1.stop()
-					gossiper2.stop()
-					done()
-				})
-
-				g1.registerService({
-					name: 'myservice',
-					port: '2512'
-				})
-			})
-		})
-	})
-
-	it('reports failed peers', function (done) {
-		this.timeout(25000)
-
-		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		var gossiper2 = new grapevine.Gossiper(25121)
-		var g1 = new Galaxya(gossiper1)
-		var g2 = new Galaxya(gossiper2)
-
-		g1.start(function () {
-			g2.start(function () {
-
-				var discovery = g2.discoverService('myservice')
-
-				discovery.on('available', function (service) {
-
-					service.on('fail', function () {
-						gossiper2.stop()
-						done()
-					})
-
-					gossiper1.stop()
-				})
-
-				g1.registerService({
-					name: 'myservice',
-					port: '2512'
-				})
-			})
-		})
-	})
-
-	it('expire services', function (done) {
-		this.timeout(20000)
-
-		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		var gossiper2 = new grapevine.Gossiper(25121)
-		var g1 = new Galaxya(gossiper1)
-		var g2 = new Galaxya(gossiper2)
-
-		g1.start(function () {
-			g2.start(function () {
-				g2.on('myservice/0.0.0/127.0.0.1/2512 expire', function (v, ttl) {
-					gossiper1.stop()
-					gossiper2.stop()
-					done()
-				})
-
-				g1.registerService({
-					name: 'myservice',
-					port: '2512',
-					ttl: Date.now() + 5000
-				})
-			})
-		})
-	})
-
-	it('does not advertise services on failed galaxies', function (done) {
-		this.timeout(25000)
-
-		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		var gossiper2 = new grapevine.Gossiper(25121)
-		var g1 = new Galaxya(gossiper1)
-		var g2 = new Galaxya(gossiper2)
-
-		g1.start(function () {
-			g2.start(function () {
-
-				var discovery = g2.discoverService('myservice')
-
-				discovery.on('available', function (service) {
-
-					service.on('fail', function () {
-						gossiper2.stop()
-						done()
-					})
-
-					gossiper1.stop()
-				})
-
-				g1.registerService({
-					name: 'myservice',
-					port: '2512'
-				})
-			})
-		})
 	})
 })
