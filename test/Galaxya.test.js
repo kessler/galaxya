@@ -10,6 +10,8 @@ function newGossiper(port) {
 	emitter.address = '127.0.0.1'
 	emitter.peer_name = '127.0.0.1:' + port
 	emitter.state = {}
+	//emitter._isLocalService = Galaxya.prototype._isLocalService
+
 	emitter.setLocalState = function (k, v, ttl) {
 		this.state[k] = [v, ttl]
 	}
@@ -150,7 +152,7 @@ describe('Galaxya', function () {
 
 			g1.registerService(s1)
 
-			var discovery = g1.discoverService('s1')
+			var discovery = g1.discover('s1')
 
 			discovery.on('available', function (service) {
 				assert.deepEqual(service, s1)
@@ -164,7 +166,7 @@ describe('Galaxya', function () {
 
 			var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, address: '127.0.0.1', data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
-			var discovery = g1.discoverService('s1')
+			var discovery = g1.discover('s1')
 
 			discovery.on('available', function (service) {
 				assert.deepEqual(service, s1)
@@ -180,7 +182,7 @@ describe('Galaxya', function () {
 
 			var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, address: '127.0.0.1', data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
-			var discovery = g1.discoverService('s1', function (service) {
+			var discovery = g1.discover('s1', function (service) {
 				assert.deepEqual(service, s1)
 				done()
 			})
