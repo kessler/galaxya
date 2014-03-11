@@ -99,5 +99,7 @@ galaxya.start(function () {
 
 TODO
 * document the 1 to many mapping between gossiper to services topology
-* ad
-d auto network space assignment
+* add auto network space assignment
+* is trie really the right structure for the underlying index?
+*
+
