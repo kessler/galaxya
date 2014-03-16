@@ -38,7 +38,7 @@ describe('ServiceDiscovery', function () {
 
 		galaxya._results = [ s1 ]
 
-		serviceDiscovery.on('available', function(err, service) {
+		serviceDiscovery.on('available', function(service) {
 			assert.strictEqual(service, s1)
 			done()
 		})
