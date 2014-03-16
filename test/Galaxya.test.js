@@ -154,7 +154,7 @@ describe('Galaxya', function () {
 
 			var discovery = g1.discover('s1')
 
-			discovery.on('available', function (service) {
+			discovery.on('available', function (err, service) {
 				assert.deepEqual(service, s1)
 				done()
 			})
