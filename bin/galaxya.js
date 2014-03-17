@@ -15,6 +15,8 @@ if (argv.sniff) {
 		config: config
 	})
 } else {
+	console.log(require('./generateGalaxyArt.js')(25, 80))
+
 	if (typeof config === 'function') {
 		callback = config
 		config = undefined
@@ -23,6 +25,6 @@ if (argv.sniff) {
 	var galaxya = require('../index')(config)
 
 	galaxya.start(function() {
-		console.log('galaxya started!')
+		console.log('galaxya started on port %s', config.port)
 	})
 }
