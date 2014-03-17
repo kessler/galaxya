@@ -224,6 +224,32 @@ describe('Galaxya', function () {
 		done()
 	})
 
+	describe('maintains a record of failed peers', function () {
+		it('adds a peer to the record when it fails', function () {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
+
+			var peer = '127.0.0.5:2313'
+
+			mockGossiper.emit('peer_failed', peer)
+
+			assert.ok('127.0.0.5:2313' in g1._failedPeers)
+		})
+
+		it('removes a peer when it comes back to life', function () {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
+
+			var peer = '127.0.0.5:2313'
+
+			mockGossiper.emit('peer_failed', peer)
+
+			mockGossiper.emit('peer_alive', peer)
+
+			assert.ok(!('127.0.0.5:2313' in g1._failedPeers))
+		})
+	})
+
 	it('emits an event when a peer fails', function (done) {
 		var mockGossiper = newGossiper(2324)
 		var g1 = galaxya(mockGossiper)
