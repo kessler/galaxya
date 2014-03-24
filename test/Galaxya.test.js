@@ -74,6 +74,7 @@ describe('Galaxya', function () {
 
 		assert.strictEqual(results.length, 3)
 
+		assert.deepEqual(results[2], s1)
 		assert.deepEqual(results[1], s2)
 		assert.deepEqual(results[0], s3)
 
@@ -224,7 +225,7 @@ describe('Galaxya', function () {
 		done()
 	})
 
-	describe('maintains a record of failed peers', function () {
+	describe('failed peers', function () {
 		it('adds a peer to the record when it fails', function () {
 			var mockGossiper = newGossiper(2324)
 			var g1 = galaxya(mockGossiper)
@@ -248,28 +249,79 @@ describe('Galaxya', function () {
 
 			assert.ok(!('127.0.0.5:2313' in g1._failedPeers))
 		})
-	})
 
-	it('emits an event when a peer fails', function (done) {
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
+		it('emits an event when a peer fails', function (done) {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
 
-		var peer = '127.0.0.5:2313'
+			var peer = '127.0.0.5:2313'
 
-		g1.on('127.0.0.5:2313 fail', done)
+			g1.on('127.0.0.5:2313 fail', done)
 
-		mockGossiper.emit('peer_failed', peer)
-	})
+			mockGossiper.emit('peer_failed', peer)
+		})
 
-	it('emits an event when a peer is alive', function (done) {
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
+		it('emits an event when a peer is alive', function (done) {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
 
-		var peer = '127.0.0.5:2313'
+			var peer = '127.0.0.5:2313'
 
-		g1.on('127.0.0.5:2313 alive', done)
+			g1.on('127.0.0.5:2313 alive', done)
 
-		mockGossiper.emit('peer_alive', peer)
+			mockGossiper.emit('peer_alive', peer)
+		})
+
+		it('filter services on failed peers - util', function () {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
+			g1._failedPeers = { '127.0.0.1:25120': true }
+			g1._failedPeersCount = 1
+
+			var services = [
+				{ gossiper: '127.0.0.1:25120' },
+				{ gossiper: '127.0.0.1:25121' }
+			]
+
+			var results = g1._filterFailed(services)
+
+			assert.deepEqual(results, [ { gossiper: '127.0.0.1:25121' } ])
+		})
+
+		it('filter services on failed peers in lookup', function () {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
+			var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+			var s2 = { name:'myservice', version: '1.1.1', port: 122, data: { moo: 'pie' }, gossiper: '127.0.0.1:2325'}
+
+			g1.registerService(s1)
+			g1.registerService(s2)
+
+			g1._failedPeers = { '127.0.0.1:2324': true }
+			g1._failedPeersCount = 1
+
+			var results = g1.lookupService('myservice')
+
+			assert.deepEqual(results, [ s2 ])
+		})
+
+		it('filter services on failed peers in discovery', function (done) {
+			var mockGossiper = newGossiper(2324)
+			var g1 = galaxya(mockGossiper)
+			var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
+			var s2 = { name:'myservice', version: '1.1.1', port: 122, data: { moo: 'pie' }, gossiper: '127.0.0.1:2325'}
+
+			g1.registerService(s1)
+			g1.registerService(s2)
+
+			g1._failedPeers = { '127.0.0.1:2324': true }
+			g1._failedPeersCount = 1
+
+			g1.discoverService('myservice', function(err, service) {
+				assert.deepEqual(service, s2)
+				done()
+			})
+		})
 	})
 
 	it('filter util - when its there', function () {

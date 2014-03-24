@@ -1,9 +1,7 @@
 var ServiceDiscovery = require('../lib/ServiceDiscovery.js')
 var assert = require('assert')
-
+var Galaxya = require('../lib/Galaxya.js')
 var EventEmitter = require('events').EventEmitter
-
-
 
 describe('ServiceDiscovery', function () {
 
@@ -15,6 +13,12 @@ describe('ServiceDiscovery', function () {
 		galaxya._pathSeparator = '/'
 		galaxya.lookupService = function () {
 			return this._results || []
+		}
+
+		galaxya._gtOrEq = Galaxya.prototype._gtOrEq
+
+		galaxya._filterFailed = function(service) {
+			return service
 		}
 
 		serviceDiscovery = new ServiceDiscovery(galaxya, 'foo')
