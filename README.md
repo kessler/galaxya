@@ -2,6 +2,8 @@
 
 embeddable peer 2 peer service discovery and configuration service
 
+Galaxya helps one process or machine discover another, using [gossip](https://github.com/kessler/grapevine)
+
 ## Example
 
 start galaxya from command line (starts on port 25120)
@@ -70,6 +72,13 @@ galaxya.start(function () {
 		service.on('fail', function () {	})
 		service.on('alive', function () { })
 	})
+
+	// this also works
+	galaxya.discoverService('foo', function(err, service) {
+		// will be fired EACH TIME a 'foo' service will be discovered
+		// as this might be unconventional, in the future we might change this so it will be called 
+		// only in the first discovery.
+	})
 })
 
 ```
@@ -101,5 +110,6 @@ TODO
 * document the 1 to many mapping between gossiper to services topology
 * add auto network space assignment
 * is trie really the right structure for the underlying index?
-*
+* allow for gossiper per machine architecture
+* discoverService callback, first time only or always?
 

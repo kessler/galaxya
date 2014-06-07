@@ -4,7 +4,7 @@
   "description": "embeddable peer 2 peer service discovery and configuration service",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha -R spec -s 20000"
   },
   "bin": {
     "galaxya": "bin/galaxya.js"
@@ -26,13 +26,14 @@
   },
   "dependencies": {
     "darkmagic": "0.0.25",
-    "grapevine": "0.2.2",
     "debug": "~0.7.4",
+    "digital-tree": "0.0.1",
+    "find-port": "0.0.3",
+    "grapevine": "0.2.2",
     "ip": "~0.3.0",
-    "semver": "~2.2.1",
-    "rc": "~0.3.3",
     "optimist": "~0.6.1",
-    "find-port": "0.0.3"
+    "rc": "~0.3.3",
+    "semver": "~2.2.1"
   },
   "devDependencies": {
     "eyes": "~0.1.8"
