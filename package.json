@@ -1,6 +1,6 @@
 {
   "name": "galaxya",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "embeddable peer 2 peer service discovery and configuration service",
   "main": "index.js",
   "scripts": {
