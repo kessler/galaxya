@@ -112,4 +112,4 @@ TODO
 * is trie really the right structure for the underlying index?
 * allow for gossiper per machine architecture
 * discoverService callback, first time only or always?
-
+* add consensus algorithm
