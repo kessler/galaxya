@@ -78,9 +78,9 @@ describe('integration test', function () {
 
 	afterEach(function(done) {
 		gossiper1.stop(function (err) {
-			if (err) return done(err)
-
-			gossiper2.stop(done)
+			gossiper2.stop(function(err) {
+				done()
+			})
 		})
 	})
 })
