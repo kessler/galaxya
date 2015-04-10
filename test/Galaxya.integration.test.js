@@ -3,122 +3,84 @@ var assert = require('assert')
 var Galaxya = require('../lib/Galaxya.js')
 
 describe('integration test', function () {
+	var g1, g2, gossiper1, gossiper2
+
 	it('gossips', function (done) {
 		this.timeout(10000)
 
-		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		var gossiper2 = new grapevine.Gossiper(25121)
-		var g1 = new Galaxya(gossiper1)
-		var g2 = new Galaxya(gossiper2)
+		var discovery = g2.discoverService('myservice')
 
-		g1.start(function () {
-			g2.start(function () {
+		discovery.on('available', function (service) {
+			assert.strictEqual(service.version, '0.0.0')
+			assert.strictEqual(service.name, 'myservice')
+			assert.strictEqual(service.port, '2512')
+			assert.strictEqual(service.address, '127.0.0.1')
+			done()
+		})
 
-				var discovery = g2.discoverService('myservice')
-
-				discovery.on('available', function (service) {
-					assert.strictEqual(service.version, '0.0.0')
-					assert.strictEqual(service.name, 'myservice')
-					assert.strictEqual(service.port, '2512')
-					assert.strictEqual(service.address, '127.0.0.1')
-
-					gossiper1.stop()
-					gossiper2.stop()
-					done()
-				})
-
-				g1.registerService({
-					name: 'myservice',
-					port: '2512'
-				})
-			})
+		g1.registerService({
+			name: 'myservice',
+			port: '2512'
 		})
 	})
 
 	it('reports failed peers', function (done) {
 		this.timeout(25000)
+		var discovery = g2.discoverService('myservice')
 
-		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		var gossiper2 = new grapevine.Gossiper(25121)
-		var g1 = new Galaxya(gossiper1)
-		var g2 = new Galaxya(gossiper2)
-
-		g1.start(function () {
-			g2.start(function () {
-
-				var discovery = g2.discoverService('myservice')
-
-				discovery.on('available', function (service) {
-
-					service.on('fail', function () {
-						gossiper2.stop()
-						done()
-					})
-
-					gossiper1.stop()
-				})
-
-				g1.registerService({
-					name: 'myservice',
-					port: '2512'
-				})
+		discovery.on('available', function (service) {
+			var g1Stopped = false
+			service.on('fail', function () {
+				assert.ok(g1Stopped)
+				done()
 			})
+
+			gossiper1.stop(function () {
+				g1Stopped = true
+			})
+		})
+
+		g1.registerService({
+			name: 'myservice',
+			port: '2512'
 		})
 	})
 
 	it('expire services', function (done) {
 		this.timeout(20000)
+		g2.on('myservice/0.0.0/127.0.0.1/2512 expire', function (v, ttl) {
+			done()
+		})
 
-		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		var gossiper2 = new grapevine.Gossiper(25121)
-		var g1 = new Galaxya(gossiper1)
-		var g2 = new Galaxya(gossiper2)
+		g1.registerService({
+			name: 'myservice',
+			port: '2512',
+			ttl: Date.now() + 5000
+		})
+	})
 
-		g1.start(function () {
-			g2.start(function () {
-				g2.on('myservice/0.0.0/127.0.0.1/2512 expire', function (v, ttl) {
-					gossiper1.stop()
-					gossiper2.stop()
-					done()
-				})
+	beforeEach(function(done) {
+		gossiper1 = new grapevine.Gossiper({ port: 25120, seeds: ['127.0.0.1:25121'] })
+		gossiper2 = new grapevine.Gossiper({ port: 25121 })
+		g1 = new Galaxya(gossiper1)
+		g2 = new Galaxya(gossiper2)
 
-				g1.registerService({
-					name: 'myservice',
-					port: '2512',
-					ttl: Date.now() + 5000
-				})
+		g1.start(function(err) {
+			if (err) return done(err)
+
+			g2.start(function (err) {
+				if (err) return done(err)
+
+				done()
 			})
 		})
 	})
 
-	it('does not advertise services on failed galaxies', function (done) {
-		this.timeout(25000)
+	afterEach(function(done) {
+		gossiper1.stop(function (err) {
+			if (err) return done(err)
 
-		var gossiper1 = new grapevine.Gossiper(25120, ['127.0.0.1:25121'])
-		var gossiper2 = new grapevine.Gossiper(25121)
-		var g1 = new Galaxya(gossiper1)
-		var g2 = new Galaxya(gossiper2)
-
-		g1.start(function () {
-			g2.start(function () {
-
-				var discovery = g2.discoverService('myservice')
-
-				discovery.on('available', function (service) {
-
-					service.on('fail', function () {
-						gossiper2.stop()
-						done()
-					})
-
-					gossiper1.stop()
-				})
-
-				g1.registerService({
-					name: 'myservice',
-					port: '2512'
-				})
-			})
+			gossiper2.stop(done)
 		})
 	})
 })

@@ -8,22 +8,6 @@ describe('ServiceDiscovery', function () {
 	var galaxya
 	var serviceDiscovery
 
-	beforeEach(function() {
-		galaxya = new EventEmitter()
-		galaxya._pathSeparator = '/'
-		galaxya.lookupService = function () {
-			return this._results || []
-		}
-
-		galaxya._gtOrEq = Galaxya.prototype._gtOrEq
-
-		galaxya._filterFailed = function(service) {
-			return service
-		}
-
-		serviceDiscovery = new ServiceDiscovery(galaxya, 'foo')
-	})
-
 	it('fires an available event when galaxya registers a new event', function (done) {
 
 		var s1 = { version: '1.1.1' }
@@ -72,5 +56,21 @@ describe('ServiceDiscovery', function () {
 
 		// WARNING: this test will not work if emitting will become really asynchronous for some reason
 		done()
+	})
+
+	beforeEach(function() {
+		galaxya = new EventEmitter()
+		galaxya._pathSeparator = '/'
+		galaxya.lookupService = function () {
+			return this._results || []
+		}
+
+		galaxya._gtOrEq = Galaxya.prototype._gtOrEq
+
+		galaxya._filterFailed = function(service) {
+			return service
+		}
+
+		serviceDiscovery = new ServiceDiscovery(galaxya, 'foo')
 	})
 })

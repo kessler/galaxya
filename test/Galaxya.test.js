@@ -26,10 +26,10 @@ function galaxya(gossiper) {
 }
 
 describe('Galaxya', function () {
+	var mockGossiper, g1
 
 	it('store services in a local index', function () {
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
+	
 		var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var key = g1.registerService(s1)
 
@@ -43,8 +43,7 @@ describe('Galaxya', function () {
 	})
 
 	it('store services with name spaces', function () {
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
+
 		var s1 = { name:'myservice/namespace1/namespace2', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var key = g1.registerService(s1)
 
@@ -58,10 +57,7 @@ describe('Galaxya', function () {
 	})
 
 	it('can be queries for services', function () {
-
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
-
+		
 		var s1 = { name:'s1/sub1/sub2', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var s2 = { name:'s1/sub1/sub2', version: '1.1.2', port: 124, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 		var s3 = { name:'s1/sub2/sub3', version: '1.1.3', port: 124, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
@@ -87,10 +83,7 @@ describe('Galaxya', function () {
 	})
 
 	it('emits events based on service namespace when a service is registered', function (done) {
-
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
-
+		
 		var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
 		var count = 0
@@ -117,14 +110,10 @@ describe('Galaxya', function () {
 	})
 
 	it('emits a service event only once for service with the same version from the same machine and port', function (done) {
-
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
-
+		
 		var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
 		var emits = []
-
 
 		g1.emit = function() {
 			emits.push(arguments)
@@ -146,8 +135,6 @@ describe('Galaxya', function () {
 
 	describe('services can be discovered', function () {
 		it('after they were registered', function (done) {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
 
 			var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
@@ -162,8 +149,6 @@ describe('Galaxya', function () {
 		})
 
 		it('by listening for future events', function (done) {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
 
 			var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, address: '127.0.0.1', data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
@@ -178,8 +163,6 @@ describe('Galaxya', function () {
 		})
 
 		it('by using  callback', function (done) {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
 
 			var s1 = { name:'s1/sub1', version: '1.1.1', port: 123, address: '127.0.0.1', data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 
@@ -193,9 +176,7 @@ describe('Galaxya', function () {
 	})
 
 	it('registers a service from gossip', function (done) {
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
-
+		
 		var s1 = { name:'moo/pie', address: '127.0.0.1', version: '1.1.1', port: '1234', data: { moo: 'pie' }, gossiper: '127.0.0.1:25123'}
 
 		assert.strictEqual(g1.lookupService('moo/pie').length, 0)
@@ -209,9 +190,7 @@ describe('Galaxya', function () {
 	})
 
 	it('expires a service from gossip', function (done) {
-		var mockGossiper = newGossiper(2324)
-		var g1 = galaxya(mockGossiper)
-
+		
 		var s1 = { name:'moo', address: '127.0.0.1', version: '1.1.1', port: '1234', data: { moo: 'pie' }}
 
 		g1.registerService(s1)
@@ -227,8 +206,6 @@ describe('Galaxya', function () {
 
 	describe('failed peers', function () {
 		it('adds a peer to the record when it fails', function () {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
 
 			var peer = '127.0.0.5:2313'
 
@@ -238,8 +215,6 @@ describe('Galaxya', function () {
 		})
 
 		it('removes a peer when it comes back to life', function () {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
 
 			var peer = '127.0.0.5:2313'
 
@@ -251,8 +226,6 @@ describe('Galaxya', function () {
 		})
 
 		it('emits an event when a peer fails', function (done) {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
 
 			var peer = '127.0.0.5:2313'
 
@@ -262,8 +235,6 @@ describe('Galaxya', function () {
 		})
 
 		it('emits an event when a peer is alive', function (done) {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
 
 			var peer = '127.0.0.5:2313'
 
@@ -273,8 +244,7 @@ describe('Galaxya', function () {
 		})
 
 		it('filter services on failed peers - util', function () {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
+
 			g1._failedPeers = { '127.0.0.1:25120': true }
 			g1._failedPeersCount = 1
 
@@ -289,8 +259,7 @@ describe('Galaxya', function () {
 		})
 
 		it('filter services on failed peers in lookup', function () {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
+
 			var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 			var s2 = { name:'myservice', version: '1.1.1', port: 122, data: { moo: 'pie' }, gossiper: '127.0.0.1:2325'}
 
@@ -306,8 +275,7 @@ describe('Galaxya', function () {
 		})
 
 		it('filter services on failed peers in discovery', function (done) {
-			var mockGossiper = newGossiper(2324)
-			var g1 = galaxya(mockGossiper)
+
 			var s1 = { name:'myservice', version: '1.1.1', port: 123, data: { moo: 'pie' }, gossiper: '127.0.0.1:2324'}
 			var s2 = { name:'myservice', version: '1.1.1', port: 122, data: { moo: 'pie' }, gossiper: '127.0.0.1:2325'}
 
@@ -347,5 +315,10 @@ describe('Galaxya', function () {
 
 		services = Galaxya.filterGtOrEq('1.1.2', services)
 		assert.strictEqual(services.length, 0)
+	})
+
+	beforeEach(function () {
+		mockGossiper = newGossiper(2324)
+		g1 = galaxya(mockGossiper)
 	})
 })

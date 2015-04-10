@@ -29,13 +29,14 @@
     "debug": "~0.7.4",
     "digital-tree": "0.0.1",
     "find-port": "0.0.3",
-    "grapevine": "0.2.2",
+    "grapevine": "^1.0.0",
     "ip": "~0.3.0",
     "optimist": "~0.6.1",
     "rc": "~0.3.3",
     "semver": "~2.2.1"
   },
   "devDependencies": {
-    "eyes": "~0.1.8"
+    "eyes": "~0.1.8",
+    "mocha": "^2.2.4"
   }
 }

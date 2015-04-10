@@ -1,4 +1,4 @@
-# Galaxya
+# Galaxya [![Build Status](https://secure.travis-ci.org/kessler/galaxya.png?branch=master)](http://travis-ci.org/kessler/galaxya)
 
 embeddable peer 2 peer service discovery and configuration service
 

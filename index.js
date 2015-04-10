@@ -9,7 +9,7 @@ module.exports = function (config) {
 
 	config.address = config.address || '127.0.0.1'
 
-	var gossiper = new grapevine.Gossiper(config.port, config.seeds, config.address)
+	var gossiper = new grapevine.Gossiper(config)
 	return new Galaxya(gossiper)
 }
 

@@ -9,13 +9,6 @@ describe('Service', function () {
 	var service
 	var peer = '127.0.0.1:123'
 
-	beforeEach(function() {
-		galaxya = new EventEmitter()
-		galaxya._pathSeparator = '/'
-
-		service = new Service({ gossiper: peer, name: '123', port: '123', address: '123' }, galaxya)
-	})
-
 	it('fires a failed event when peer a fails', function (done) {
 
 		service.on('fail', done)
@@ -54,5 +47,12 @@ describe('Service', function () {
 
 			assert.strictEqual(service.rawKey, 'abcd/123/0.0.0/123/123')
 		})
+	})
+
+	beforeEach(function() {
+		galaxya = new EventEmitter()
+		galaxya._pathSeparator = '/'
+
+		service = new Service({ gossiper: peer, name: '123', port: '123', address: '123' }, galaxya)
 	})
 })
