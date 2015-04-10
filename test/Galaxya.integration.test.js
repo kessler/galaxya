@@ -59,7 +59,7 @@ describe('integration test', function () {
 		})
 	})
 
-	beforeEach(function(done) {
+	beforeEach(function (done) {
 		gossiper1 = new grapevine.Gossiper({ port: 25120, seeds: ['127.0.0.1:25121'] })
 		gossiper2 = new grapevine.Gossiper({ port: 25121 })
 		g1 = new Galaxya(gossiper1)
@@ -76,9 +76,9 @@ describe('integration test', function () {
 		})
 	})
 
-	afterEach(function(done) {
+	afterEach(function (done) {
 		gossiper1.stop(function (err) {
-			gossiper2.stop(function(err) {
+			gossiper2.stop(function (err) {
 				done()
 			})
 		})
