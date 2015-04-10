@@ -29,7 +29,7 @@
     "debug": "~0.7.4",
     "digital-tree": "0.0.1",
     "find-port": "0.0.3",
-    "grapevine": "^1.0.0",
+    "grapevine": "^1.0.3",
     "ip": "~0.3.0",
     "optimist": "~0.6.1",
     "rc": "~0.3.3",

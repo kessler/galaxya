@@ -30,6 +30,7 @@ describe('integration test', function () {
 
 		discovery.on('available', function (service) {
 			var g1Stopped = false
+			
 			service.on('fail', function () {
 				assert.ok(g1Stopped)
 				done()
