@@ -2,7 +2,8 @@
 
 embeddable peer 2 peer service discovery and configuration service
 
-Galaxya helps one process or machine discover another, using [gossip](https://github.com/kessler/grapevine)
+- Galaxya helps one process or machine discover another, using [gossip](https://github.com/kessler/grapevine)
+- Galaxya helps one process prepare for discovery of processes that do not exist yet.
 
 ## Example
 
@@ -60,7 +61,7 @@ galaxya.start(function () {
 	//		{ port: 12345, name: 'foo', version: '0.0.6', data: { my: 'service', data: 1 }}
 	// ]
 
-	// discover new foo services
+	// discover new foo services (in the future!)
 	var discovery = galaxya.discoverService('foo')
 
 	discovery.on('available', function (service) {
