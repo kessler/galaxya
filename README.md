@@ -68,7 +68,7 @@ galaxya.start(function () {
 		// notify on all foo services
 	})
 
-	discovery.on('available', '0.0.3' function (service) {
+	discovery.on('available', '0.0.3', function (service) {
 		// notify on versions equal or higher than 0.0.3
 		service.on('fail', function () {	})
 		service.on('alive', function () { })
@@ -106,6 +106,21 @@ galaxya.start(function () {
 
 ```
 
+#### Availability
+```javascript
+	// serviceClient.js
+	var discovery = galaxya.discoverService('foo/bar')
+
+	discovery.on('available', function(service) {
+		service.on('fail', function () {
+
+		})
+
+		service.on('alive', function () {
+
+		})
+	})
+```
 
 TODO
 * document the 1 to many mapping between gossiper to services topology

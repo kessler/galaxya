@@ -5,9 +5,13 @@ module.exports = function (config) {
 
 	config = config || {}
 
-	config.port = config.port || 25120
+	if (config.port === undefined) {
+		config.port = 25120
+	}
 
-	config.address = config.address || '127.0.0.1'
+	if (config.address === undefined) {
+		config.address = '127.0.0.1'
+	}
 
 	var gossiper = new grapevine.Gossiper(config)
 	return new Galaxya(gossiper)
