@@ -30,10 +30,10 @@
     "digital-tree": "0.0.1",
     "find-port": "0.0.3",
     "grapevine": "^1.0.3",
-    "ip": "~0.3.0",
+    "ip": "^1.1.5",
     "optimist": "~0.6.1",
     "rc": "~0.3.3",
-    "semver": "~2.2.1"
+    "semver": "^5.4.1"
   },
   "devDependencies": {
     "eyes": "~0.1.8",
